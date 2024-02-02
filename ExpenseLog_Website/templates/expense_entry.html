@@ -1,0 +1,56 @@
+{% extends "base.html" %} {% block title %}Sign Up{% endblock %}
+
+{% block content %}
+<form method="POST">
+    <br/>
+    <h3 align="center">Add an expense</h3>
+    <br/>
+    <div class="form-group">
+        <label for="date">Date</label>
+        <input type="date" id="date" name="date"/>
+    </div>
+
+    <div class="form-group">
+        <label for="description">Description</label>
+        <input type="text" class="form-control" id="description" name="description" placeholder="Enter a description"/>
+    </div>
+
+    <div class="form-group">
+        <label class="form-label mt-4">Amount</label>
+        <div class="form-group">
+          <div class="input-group mb-3">
+            <span class="input-group-text">$</span>
+            <input type="text" class="form-control" id="amount" name="amount" aria-label="Amount (to the nearest dollar)">
+          </div>
+        </div>
+      </div>
+    <br />
+    <button type="submit" class="btn btn-info">Submit</button>
+</form>
+
+<br/>
+
+<table class="table table-hover">
+    <thead>
+      <tr>
+        <th scope="col">Date</th>
+        <th scope="col">Description</th>
+        <th scope="col">Amount</th>
+      </tr>
+    </thead>
+    <tbody>
+        {% for entry in user.entry %}
+        <tr class="table-primary">
+            <td>{{ entry.date }}</td>
+            <td>{{ entry.description }}</td>
+            <td>${{ '%0.2f' % ( entry.amount / 100 )}}
+                <button type="button" class="close" onclick="deleteEntry({{ entry.id }})">
+                    <span aria-hidden="true">&times;</span>
+                </button> <!-- x button -->
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+  </table>
+
+{% endblock %}

@@ -6,7 +6,7 @@ class Entry(db.Model):
     id = db.Column(db.Integer,primary_key=True)
     date = db.Column(db.Date)
     description = db.Column(db.String(10000))
-    amount = db.Column(db.Float)
+    amount = db.Column(db.Integer)
     user_id = db.Column(db.Integer,db.ForeignKey('user.id'))
 
 class User(db.Model,UserMixin):
