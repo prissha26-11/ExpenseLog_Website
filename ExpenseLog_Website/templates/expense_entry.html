@@ -1,32 +1,125 @@
-{% extends "base.html" %} {% block title %}Sign Up{% endblock %}
+{% extends "base.html" %} {% block title %}Add Expense{% endblock %}
 
 {% block content %}
-<form method="POST">
+<form action = "/expense_entry" method="POST">
     <br/>
     <h3 align="center">Add an expense</h3>
     <br/>
     <div class="form-group">
-        <label for="date">Date</label>
-        <input type="date" id="date" name="date"/>
-    </div>
-
-    <div class="form-group">
-        <label for="description">Description</label>
-        <input type="text" class="form-control" id="description" name="description" placeholder="Enter a description"/>
-    </div>
-
-    <div class="form-group">
-        <label class="form-label mt-4">Amount</label>
-        <div class="form-group">
-          <div class="input-group mb-3">
-            <span class="input-group-text">$</span>
-            <input type="text" class="form-control" id="amount" name="amount" aria-label="Amount (to the nearest dollar)">
-          </div>
-        </div>
+      <label for="date">Date: </label>
+      <div class="input-group mb-3">
+        <input type="date" id="date" name="date" value="{{ todayDate }}"/>
       </div>
-    <br />
-    <button type="submit" class="btn btn-info">Submit</button>
+    </div>
+
+    <div class="form-group">
+      <label for="description">Description: </label>
+      <div class="input-group mb-3">
+        <input type="text" class="form-control" id="description" name="description" placeholder="Enter a description"/>
+      </div>
+    </div>
+    
+    <div class="form-group">
+      <label for="categorySeletction" class="form-label mt-4">Category Type: </label>
+        <div class="input-group mb-3">
+          <select class="form-select" id="exampleSelect1" style="width: 500px !important; min-width: 500px; max-width: 500px;">
+            {% for list in categorylist %}
+              <option>{{ list.categoryType }}</option>
+            {% endfor %}
+          </select>
+          <button type="button" class="btn btn-info disabled" data-toggle="modal" data-target="#addCategory">?</button>
+        </div>
+    </div>
+
+    <div class="form-group"> 
+      <label class="form-label mt-4">Amount: </label>
+      <div class="input-group mb-3">
+        <span class="input-group-text">$</span>
+        <input type="text" class="form-control" id="amount" name="amount" aria-label="Amount (to the nearest dollar)">
+      </div>
+    </div>
+
+    <br/>
+    <div class="form-group" align="center">
+      <button type="submit" class="btn btn-info" style="width: 500px !important; min-width: 500px; max-width: 500px;">Add Expense</button>
+    </div>
+    
 </form>
+
+<!-- Modal -->
+<div class="modal fade" id="addCategory" role="dialog">
+  <div class="modal-dialog">
+  
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        
+        <h4 class="modal-title">Edit Category</h4>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <label for="category">Enter Category to add:</label>
+        <form action = "/add-category" method = "POST">
+          <div class="input-group mb-3">
+            <input type = "text" class="form-control" name = "category" />
+            <input type = "submit" class="btn btn-info" value="Add"/>
+          </div>
+          
+        </form> 
+        <br/>
+        <div class="list-group overflow-auto shadow" style="max-height: 170px;">
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <th scope="col">Category</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for list in categorylist %}
+              <tr class="table-primary">
+                <td>{{ list.categoryType }}
+                      <button type="button" class="close" data-toggle="modal" data-target="#myCategoryDelete{{list.id}}">
+                          <span aria-hidden="true">&times;</span>
+                      </button> <!-- x button -->
+                  </td>
+                
+              </tr>
+              <!-- Modal -->
+              <div class="modal fade" id="myCategoryDelete{{list.id}}" role="dialog">
+                <div class="modal-dialog">
+                
+                  <!-- Modal content-->
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      
+                      <h4 class="modal-title">Delete Category</h4>
+                      <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                      <p>{{list.id}}?? </p>
+                      <p>you sure you want to delete this Category?</p>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-danger" onclick="deleteCategory({{ list.id }})">Yes</button>
+                      <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
+                      <!-- <form id="form" action="{{ url_for('views.delete_category', action='delete', item_id=list.id) }}" method="POST">
+                        <input type="submit" value="Delete" class="btn btn-danger">
+                      </form>
+                      <button type="button" class="btn btn-default" data-dismiss="modal">No</button> -->
+                    </div>
+                  </div>
+                </div>
+              </div>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        <br/>  
+      </div>
+    </div>
+    
+  </div>
+</div>
 
 <br/>
 
@@ -35,6 +128,7 @@
       <tr>
         <th scope="col">Date</th>
         <th scope="col">Description</th>
+        <th scope="col">Category</th>
         <th scope="col">Amount</th>
       </tr>
     </thead>
@@ -43,14 +137,39 @@
         <tr class="table-primary">
             <td>{{ entry.date }}</td>
             <td>{{ entry.description }}</td>
+            <td>{{ entry.category.categoryType }}</td>
             <td>${{ '%0.2f' % ( entry.amount / 100 )}}
-                <button type="button" class="close" onclick="deleteEntry({{ entry.id }})">
+                <button type="button" class="close" data-toggle="modal" data-target="#myModal{{entry.id}}">
                     <span aria-hidden="true">&times;</span>
                 </button> <!-- x button -->
             </td>
         </tr>
-        {% endfor %}
-    </tbody>
-  </table>
+        <!-- Entry delete Modal -->
+        <div class="modal fade" id="myModal{{entry.id}}" role="dialog">
+          <div class="modal-dialog">
+          
+            <!-- Modal content-->
+            <div class="modal-content">
+              <div class="modal-header">
+                
+                <h4 class="modal-title">Delete Entry</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+              </div>
+              <div class="modal-body">
+                <p>Are you sure you want to delete this entry?</p>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-default" onclick="deleteEntry({{ entry.id }})">Yes</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
+              </div>
+            </div>
+          </div>
+        </div>
 
+        
+        {% endfor %}
+
+        
+    </tbody>
+  </table>  
 {% endblock %}
