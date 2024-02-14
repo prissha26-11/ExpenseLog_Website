@@ -1,55 +1,82 @@
 {% extends "base.html" %} {% block title %}Add Expense{% endblock %}
-
+{% import "bootstrap/wtf.html" as wtf %}
 {% block content %}
-<form action = "/expense_entry" method="POST">
+<form novalidate action = "/expense_entry" name ="expense-form" method="POST">
     <br/>
-    <h3 align="center">Add an expense</h3>
+    <div>
+      <h1 align="center">Add an expense</h1>
+    </div>
     <br/>
-    <div class="form-group">
-      <label for="date">Date: </label>
-      <div class="input-group mb-3">
-        <input type="date" id="date" name="date" value="{{ todayDate }}"/>
-      </div>
-    </div>
-
-    <div class="form-group">
-      <label for="description">Description: </label>
-      <div class="input-group mb-3">
-        <input type="text" class="form-control" id="description" name="description" placeholder="Enter a description"/>
-      </div>
-    </div>
-    
-    <div class="form-group">
-      <label for="categorySeletction" class="form-label mt-4">Category Type: </label>
-        <div class="input-group mb-3">
-          <select class="form-select" id="exampleSelect1" style="width: 500px !important; min-width: 500px; max-width: 500px;">
-            {% for list in categorylist %}
-              <option>{{ list.categoryType }}</option>
-            {% endfor %}
-          </select>
-          <button type="button" class="btn btn-info disabled" data-toggle="modal" data-target="#addCategory">?</button>
+    {{ form.csrf_token }}
+    <div class ="all">
+      <div class="form-row">
+        {{ form.date.label(class="form-control-lg") }}
+        <div class="form-group">
+          {{ form.date(class = "form-control-lg DateTimeField", value= todayDate) }}
         </div>
-    </div>
+      </div>
 
-    <div class="form-group"> 
-      <label class="form-label mt-4">Amount: </label>
-      <div class="input-group mb-3">
-        <span class="input-group-text">$</span>
-        <input type="text" class="form-control" id="amount" name="amount" aria-label="Amount (to the nearest dollar)">
+      <div class="form-row">
+        {{ form.description.label(class="form-control-lg") }}
+        <div class="form-group">
+          {% if form.description.errors %}
+              {{ form.description(class="form-control form-control-lg is-invalid") }}
+              <div class="invalid-feedback">
+                  {% for error in form.description.errors %}
+                      <span>{{ error }}</span>
+                  {% endfor %}
+              </div>
+          {% else %}
+              {{ form.description(class="form-control form-control-lg",placeholder="Enter description") }}
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="form-row">
+        {{ form.category.label(class="form-control-lg") }}
+        <div class="form-group">
+          <div class="form-inline">
+            {{ form.category(class="form-control-lg") }}
+            <button type="button" class="btn-lg btn btn-info disabled" data-toggle="modal" data-target="#addCategory">?</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        {{ form.amount.label(class="form-control-lg")  }}
+        <div class="form-group">
+          <div class="input-group">
+            <div class="input-group-prepend">
+              <span class="input-group-text">$</span>
+            </div>
+            {% if form.amount.errors %}
+              {{ form.amount(class="form-control form-control-lg is-invalid") }}
+              <div class="invalid-feedback">
+                {% for error in form.amount.errors %}
+                  <span>{{ error }}</span>
+                {% endfor %}
+              </div>
+            {% else %}
+              {{ form.amount(class="form-control form-control-lg",placeholder="0.00") }}
+            {% endif %}
+          </div>  
+        </div>
       </div>
     </div>
 
     <br/>
-    <div class="form-group" align="center">
-      <button type="submit" class="btn btn-info" style="width: 500px !important; min-width: 500px; max-width: 500px;">Add Expense</button>
-    </div>
     
+    <div class="form-group" align="center">
+      <input type = "submit" class="form-control-lg btn btn-info" name="btn" value="Add Expense"/>
+      <!-- <button type="submit" class="form-control-lg btn btn-info" style="width: 500px !important; min-width: 500px; max-width: 500px;">Add Expense</button> -->
+    </div> 
+
 </form>
 
+
 <!-- Modal -->
-<div class="modal fade" id="addCategory" role="dialog">
+<div novalidate class="modal fade" id="addCategory" role="dialog">
   <div class="modal-dialog">
-  
     <!-- Modal content-->
     <div class="modal-content">
       <div class="modal-header">
@@ -58,10 +85,12 @@
         <button type="button" class="close" data-dismiss="modal">&times;</button>
       </div>
       <div class="modal-body">
+        
         <label for="category">Enter Category to add:</label>
         <form action = "/add-category" method = "POST">
+
           <div class="input-group mb-3">
-            <input type = "text" class="form-control" name = "category" />
+            <input type = "text" class="form-control" name = "newcategory" required/>
             <input type = "submit" class="btn btn-info" value="Add"/>
           </div>
           
@@ -102,10 +131,6 @@
                     <div class="modal-footer">
                       <button type="button" class="btn btn-danger" onclick="deleteCategory({{ list.id }})">Yes</button>
                       <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
-                      <!-- <form id="form" action="{{ url_for('views.delete_category', action='delete', item_id=list.id) }}" method="POST">
-                        <input type="submit" value="Delete" class="btn btn-danger">
-                      </form>
-                      <button type="button" class="btn btn-default" data-dismiss="modal">No</button> -->
                     </div>
                   </div>
                 </div>
@@ -172,4 +197,6 @@
         
     </tbody>
   </table>  
+
+
 {% endblock %}
