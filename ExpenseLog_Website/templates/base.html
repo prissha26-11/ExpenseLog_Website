@@ -20,6 +20,25 @@
             crossorigin="anonymous"
         />
 
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.js">   
+        </script>   
+        
+        <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.js">   
+        </script>   
+
+        <link href="//code.jquery.com/ui/1.10.2/themes/smoothness/jquery-ui.css" rel="Stylesheet"></link>
+        <script src="//code.jquery.com/jquery-2.2.0.min.js"></script>
+        <script src="//code.jquery.com/ui/1.10.2/jquery-ui.js" ></script>
+        <link href="//code.jquery.com/ui/1.10.2/themes/smoothness/jquery-ui.css" rel="Stylesheet"></link>
+        <script src="//code.jquery.com/jquery-2.2.0.min.js"></script>
+        <script src="//code.jquery.com/ui/1.10.2/jquery-ui.js" ></script>
+        
+
+        
+
+        <link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/themes/ui-lightness/jquery-ui.css"
+            rel="stylesheet" type="text/css" />  
+
         <title>{% block title %}Home{% endblock %}</title>
     </head>
     <body>
@@ -63,17 +82,13 @@
             {% endfor %}
         {% endif %}
         {% endwith %}
-
+        
         <div class="container">
             {% block content %}
             {% endblock %}
         </div>
 
-        <script
-            src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
-            integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
-            crossorigin="anonymous"
-        ></script>
+        
         <script
             src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
             integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
@@ -85,11 +100,13 @@
             crossorigin="anonymous"
         ></script>
         <script src="https://cdn.jsdelivr.net/npm/axios@1.1.2/dist/axios.min.js"></script>
-
+        <script async src="//code.jquery.com/ui/1.10.1/jquery-ui.min.js"></script>
         <script 
             type="text/javascript"
             src="{{ url_for('static', filename='index.js' )}}"
         ></script>
+        
+        
         
     </body>
 </html>

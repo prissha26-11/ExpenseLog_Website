@@ -1,18 +1,18 @@
-function deleteEntry(entryId) {
+function deleteEntry(entryId,person) {
     fetch('/delete-entry', {
         method: 'POST',
-        body: JSON.stringify({ entryId: entryId }),
+        body: JSON.stringify({ entryId: entryId , person }),
     }).then((_res) => {
-        window.location.href = "/expense_entry";
+        window.location.href = "/expense_entry/"+person;
     });
 }
 
-function deleteCategory(categoryId) {
+function deleteCategory(categoryId,person) {
     fetch('/delete-category', {
         method: 'POST',
-        body: JSON.stringify({ categoryId: categoryId }),
+        body: JSON.stringify({ categoryId: categoryId, person }),
     }).then((_res) => {
-        window.location.href = "/expense_entry";
+        window.location.href = "/expense_entry/"+person;
     });
 }
 

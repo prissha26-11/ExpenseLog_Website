@@ -2,38 +2,61 @@
 
 {% block content %}
 <br/>
-<h1 align="center">Expense Log</h1>
-<br/>
-<table class="table table-hover">
-    <thead>
-      <tr>
-        <!-- <th scope="col">Id</th> -->
-        <th scope="col">Date</th>
-        <th scope="col">Description</th>
-        <th scope="col">Amount</th>
-      </tr>
-    </thead>
-    <tbody>
-        {% for entry in user.entry %}
-        <tr class="table-primary">
-            <td>{{ entry.date }}</td>
-            <td>{{ entry.description }}</td>
-            <td>{{ entry.amount }}
-<!--                 <button type="button" class="close" onclick="deleteEntry({{ entry.id }})">
-                    <span aria-hidden="true">&times;</span>
-                </button>  --> <!-- x button -->
-            </td>
-        </tr>
-        {% endfor %}
-    </tbody>
-  </table>
+<div class="form-group" style="text-align: center;">
+    <h1 style="display: inline;">List of People</h1>
+    <button type="button" class="btn btn-outline-info" style="float: right; top: 10px; position: relative; font-size: 20px; height: 45px; width: 45px;" data-toggle="modal" data-target="#addPerson"><strong> + </strong></button>
+</div>
 
-<!-- <form method="POST">
-    <textarea name="entry" id="entry" class="form-control"></textarea>
-    <br />
-    <div align="center">
-        <button type="submit" class="btn btn-info">Add Entry</button>
+
+<br/>
+<div class="form-group">
+    {% for list in people %}
+    <div class="card text-white bg-info mb-3" style="background-image: linear-gradient(to left, rgba(245, 246, 252, 0.52), rgba(2, 8, 19, 0.72)), url('/static/Images/{{ list.image_file }}'); background-repeat: no-repeat;background-attachment: fixed;background-size: 100% 100%;">
+        <div class="card-body">
+        <h4 class="card-title">{{ list.firstname }}</h4>
+        <h6 class="card-subtitle mb-2 text-muted">{{ list.lastname }}</h6>
+        <p class="card-text">Total: ${{ list.total }}</p>
+
+        <a href="/expense_entry/{{list.firstname}}" class="card-link">See expense log</a>
+        </div>
     </div>
-</form> -->
+    {% endfor %}
+</div>
+
+<!-- Modal -->
+<div novalidate class="modal fade" id="addPerson" role="dialog" >
+    <div class="modal-dialog">
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header">
+          
+          <h4 class="modal-title">Add New Person</h4>
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+        <div class="modal-body">
+          <form action = "/add-person" enctype="multipart/form-data" method = "POST">
+            <label class="form-label mt-4">First Name: </label>
+            <div class="form-group">
+                <input type = "text" class="form-control" name = "newpersonfirstname" required/>
+            </div>
+            <label class="form-label mt-4">Last Name: </label>
+            <div class="form-group">
+                <input type = "text" class="form-control" name = "newpersonlastname" required/>
+            </div>
+            <div class="form-group">
+                <label for="personImageFile" class="form-label mt-4">Add Picture:</label>
+                <input class="form-control-file" type="file" name = "personImageFile" accept="image/*">
+              </div>
+        
+            <div class="input-group mb-3">
+              <input type = "submit" class="btn btn-info" value="Add"/>
+            </div>
+            
+          </form> 
+        </div>
+      </div>
+    </div>
+  </div>
+
 
 {% endblock %}

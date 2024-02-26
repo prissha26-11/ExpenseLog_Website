@@ -8,7 +8,6 @@ from wtforms import StringField, PasswordField, BooleanField
 from wtforms.validators import InputRequired, Email, Length, ValidationError
 
 auth = Blueprint('auth',__name__)
-
     
 class LoginForm(FlaskForm):
     username = StringField('Username', validators=[InputRequired(), Length(min=4, max= 15, message="Username should be between 4 to 15 characters.")])
@@ -29,7 +28,8 @@ class LoginForm(FlaskForm):
 
 class SignUpForm(FlaskForm):
     username = StringField('Username', validators=[InputRequired(), Length(min=4, max= 15)])
-    name = StringField('Name', validators=[InputRequired(), Length(min=4, max= 15)])
+    firstname = StringField('First name', validators=[InputRequired(), Length(min=4, max= 15)])
+    lastname = StringField('Last name', validators=[InputRequired(), Length(min=4, max= 15)])
     password1 = PasswordField('Password', validators=[InputRequired(), Length(min=8,max=80)])
     password2 = PasswordField('ReEnter Password', validators=[InputRequired()])
 
@@ -80,7 +80,8 @@ def signup():
 
     if form.validate_on_submit():
         username = form.username.data
-        name = form.name.data
+        firstname = form.firstname.data
+        lastname = form.lastname.data
         password1 = form.password1.data
         password2 = form.password2.data
 
@@ -90,7 +91,7 @@ def signup():
         elif password1 != password2:
             flash('Password don\'t match.', category='error')
         else:
-            new_user =User(username=username,first_name=name,password=generate_password_hash(password1,method='pbkdf2:sha256'))
+            new_user =User(username=username,first_name=firstname,last_name=lastname,password=generate_password_hash(password1,method='pbkdf2:sha256'))
             db.session.add(new_user)
             db.session.commit()
             login_user(new_user,remember=True)

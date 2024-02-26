@@ -18,11 +18,21 @@ class Entry(db.Model):
     description = db.Column(db.String(10000))
     category_id = db.Column(db.Integer,db.ForeignKey('category.id'))
     amount = db.Column(db.Integer)
+    people_id = db.Column(db.Integer,db.ForeignKey('people.id'))
+
+class People(db.Model):
+    id = db.Column(db.Integer,primary_key=True)
+    firstname = db.Column(db.String(150))
+    lastname = db.Column(db.String(150))
+    image_file = db.Column(db.String(150))
     user_id = db.Column(db.Integer,db.ForeignKey('user.id'))
+    entry = db.relationship('Entry')
+    total = db.Column(db.Numeric(10,2))
 
 class User(db.Model,UserMixin):
     id = db.Column(db.Integer,primary_key=True)
     username = db.Column(db.String(150),unique = True)
     password = db.Column(db.String(150))
     first_name = db.Column(db.String(150))
-    entry = db.relationship('Entry')
+    last_name = db.Column(db.String(150))
+    people = db.relationship('People')
