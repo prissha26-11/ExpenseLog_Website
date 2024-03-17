@@ -18,6 +18,7 @@ class Entry(db.Model):
     description = db.Column(db.String(10000))
     category_id = db.Column(db.Integer,db.ForeignKey('category.id'))
     amount = db.Column(db.Integer)
+    notes = db.Column(db.String(10000))
     people_id = db.Column(db.Integer,db.ForeignKey('people.id'))
 
 class People(db.Model):

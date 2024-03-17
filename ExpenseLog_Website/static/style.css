@@ -1,0 +1,57 @@
+
+.form-inline label {
+    justify-content: flex-start;
+}
+
+.split-names {
+    font-size: 25px !important; 
+    margin-left: 10px;
+    margin-right: 10px;
+    margin-bottom: 0px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    text-align: left;
+    width: 200px;
+    max-width: 200px;
+}
+
+.split-operation {
+    font-size: 25px; 
+    margin-left: 10px;
+    margin-right: 10px;
+    margin-bottom: 0px;
+    padding-top: 30px;
+    padding-bottom: 30px;
+    width: 210px;
+    text-align: right;
+}
+
+.percentoperation {
+    font-size: 25px; 
+    margin-top: 8px;
+    margin-left: 10px;
+    width: 410px;
+    justify-content: right !important;
+    padding: 0px;
+}
+
+.split-amount {
+    width: 210px;
+    padding-top: 24.25px;
+    padding-bottom: 24.25px;
+}
+
+.split-percent {
+    width: 115px;
+    padding-top: 24.25px;
+    padding-bottom: 24.25px;
+}
+
+.split-font {
+    font-size: 25px; 
+}
+
+.split-row {
+    max-width:1000px;
+    padding-top: 15px;
+}

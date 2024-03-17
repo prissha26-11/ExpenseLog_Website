@@ -45,84 +45,232 @@
       <div class="form-row">
         {{ form.amount.label(class="form-control-lg")  }}
         <div class="form-group">
-          <div class="input-group">
-            <div class="input-group-prepend">
-              <span class="input-group-text">$</span>
-            </div>
-            {% if form.amount.errors %}
-              {{ form.amount(class="form-control form-control-lg is-invalid") }}
-              <div class="invalid-feedback">
-                {% for error in form.amount.errors %}
-                  <span>{{ error }}</span>
-                {% endfor %}
+          <div class="form-inline">
+            <div class="input-group">
+              <div class="input-group-prepend">
+                <span class="input-group-text">$</span>
               </div>
-            {% else %}
-              {{ form.amount(class="form-control form-control-lg",placeholder="0.00") }}
-            {% endif %}
+              {% if form.amount.errors %}
+                {{ form.amount(class="form-control form-control-lg is-invalid") }}
+                <div class="invalid-feedback">
+                  {% for error in form.amount.errors %}
+                    <span>{{ error }}</span>
+                  {% endfor %}
+                </div>
+              {% else %}
+                {{ form.amount(class="form-control form-control-lg",placeholder="0.00") }}
+              {% endif %}
+            </div>
+            
           </div>  
+          <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" role="switch" name ="split-checkbox" id="split-checkbox" >
+            <label class="form-check-label" >Split</label>
+          </div>
+        </div>
+        <div class="form-group" id="split-notes" style = 'display: none'>
+          <div class="form-inline">
+            <textarea class="alert alert-dismissible alert-primary" style="margin-top: 0px;margin-bottom: 0px;margin-left: 5px;margin-right: 0px;font-size: 15px; width: 350px;" name="notes" id="notes"></textarea>
+           
+          </div>
         </div>
       </div>
     </div>
 
+    <div id= "split-options" style = 'display: none'>
+      <div class="btn-group btn-group-toggle" data-toggle="buttons">
+        <label class="btn btn-outline-primary" id="equal">
+          <input type="radio" name="split" id="equally" autocomplete="off"> =
+        </label>
+        <label class="btn btn-outline-primary" id="percent">
+          <input type="radio" name="split" id="percentage" autocomplete="off"> %
+        </label>
+      </div>
+      <br/>
+      <div id="split-form" style = 'display: none'>
+        <div class="parent form-row split-row">
+          <div class ="equal percent bg-info" style="background-image: url('/static/Images/{{ personuser.image_file }}'); width:100px; height:200px; background-position:center; max-width: 100px;max-height: 100px; border-radius: 50%; overflow: hidden; margin-left: 10px;">&nbsp;</div>     
+          <label class="equal percent split-names"><strong id="selffirstname">{{personuser.firstname}}</strong> <br> <strong id="selflastname">{{personuser.lastname}}</strong> </label> 
+          <div class="percent split-percent">
+            <div class="input-group">
+              <input type="text" class="form-control split-font" id="selfpercent" placeholder="0">
+              <div class="input-group-append">
+                <span class="input-group-text split-font">%</span>
+              </div>
+            </div>
+          </div>
+          <label class="equal percent split-operation" id="selfoperation">test</label>
+          <div class="equal percent split-amount">
+            <div class="input-group">
+              <div class="input-group-prepend">
+                <span class="input-group-text split-font">$</span>
+              </div>
+              {{ form.selfsplit(class="form-control split-font",placeholder="0.00", readonly=true) }}
+            </div>
+          </div>
+        </div>
+        <div class="parent form-row split-row">
+          <div class ="equal percent bg-info" style="background-image: url('/static/Images/{{ person.image_file }}'); width:100px; height:200px; background-position:center; max-width: 100px;max-height: 100px; border-radius: 50%; overflow: hidden; margin-left: 10px; padding: 0px;">&nbsp;</div>
+          <label class="equal percent split-names" id="personlabel"><strong id="personfirstname">{{person.firstname}}</strong> <br> <strong id="personlastname">{{person.lastname}}</strong> </label> 
+          <div class="percent split-percent">
+            <div class="input-group">
+              <input type="text" class="form-control split-font" id="personpercent" placeholder="0">
+              <div class="input-group-append">
+                <span class="input-group-text split-font">%</span>
+              </div>
+            </div>
+          </div>
+          <label class="equal percent split-operation" id="personoperation">test</label>
+          <div class="equal percent split-amount">
+            <div class="input-group">
+              <div class="input-group-prepend">
+                <span class="input-group-text split-font">$</span>
+              </div>
+              {{ form.personsplit(class="form-control split-font",placeholder="0.00", readonly=true) }}
+            </div>
+          </div>     
+        </div>
+      </div> 
+    </div>
+    
     <br/>
     
     <div class="form-group" align="center">
-      <input type = "submit" class="form-control-lg btn btn-info" name="btn" value="Add Expense"/>
-      <!-- <button type="submit" class="form-control-lg btn btn-info" style="width: 500px !important; min-width: 500px; max-width: 500px;">Add Expense</button> -->
+      <input type = "submit" class="btn-lg btn btn btn-info" name="btn" value="Add Expense"/>
     </div> 
-
-    
-
 </form>
 
 <script>
   $(function() {
-      $("#description").autocomplete({
-          source:function(request, response) {
-              $.getJSON("{{url_for('views.autocomplete')}}",{
-                  q: request.term, // in flask, "q" will be the argument to look for using request.args
-              }, function(data) {
-                  response(data.matching_results); // matching_results from jsonify
-              });
-          }
-      });
-  })
-  </script>
-
-<script>
+    $("#description").autocomplete({
+      source:function(request, response) {
+        $.getJSON("{{url_for('views.autocomplete')}}",{
+            q: request.term, // in flask, "q" will be the argument to look for using request.args
+        }, function(data) {
+            response(data.matching_results); // matching_results from jsonify
+        });
+      }
+    });
+  });
+  
   let desc = document.getElementById('description');
   let cate = document.getElementById('category');
+  
   desc.onchange = function(){
-        value = desc.value;
-        fetch('/autocompletecat/' + value).then(function(response){
+    value = desc.value;
+    fetch('/autocompletecat/' + value).then(function(response){
+      response.json().then(function(data){
+        $("#category").val(data);
+      });
+    });
+  };
 
-            response.json().then(function(data){
-              $("#category").val(data);
-            });
-        });
+  let split_option_btn = document.getElementById('split-options');
+  let split_checkbox = document.getElementById('split-checkbox');
+
+  split_checkbox.onchange = function(){
+    if(this.checked){
+      split_option_btn.style.display = 'block';
     }
-  </script>
+    else{
+      split_option_btn.style.display = 'none';
+      split_notes.style.display = 'none';
+    }
+  };
+
+  $('#amount').blur(function(){
+    if(this.value == "")
+    {
+      $("#split-checkbox").prop("checked", false);
+      split_checkbox.onchange();
+    }
+  });
+
+  let split_form = document.getElementById('split-form');
+  let split_notes = document.getElementById('split-notes');
+  $(".btn").click(function () {
+    split_form.style.display = 'block';
+    split_notes.style.display = 'block';
+    $(".parent").children().each(function () {
+      $(this).hide();
+    });
+    $(`.${$(this).attr("id")}`).show();
+  });
+
+  let amt = document.getElementById('amount');
+  let labelElement1 = document.getElementById("selfoperation");
+  let labelElement2 = document.getElementById("personoperation");
+  let personfirstname = document.getElementById("personfirstname");
+  let selffirstname = document.getElementById("selffirstname");
+  
+  function myfunc() {
+    var getSelectedValue = document.querySelector('input[name="split"]:checked');
+    if(getSelectedValue.id=="equally"){
+      $('#selfsplit').val((amt.value/2).toFixed(2));
+      $('#personsplit').val((amt.value/2).toFixed(2));
+      labelElement1.innerHTML = "$"+ parseFloat(amt.value).toFixed(2) + " / 2 =";
+      labelElement2.innerHTML = "$"+ parseFloat(amt.value).toFixed(2) + " / 2 =";
+      $('#notes').val(selffirstname.innerHTML+" : "+labelElement1.innerHTML+ " $"+ $('#selfsplit').val()+ ", \r" + personfirstname.innerHTML+" : "+labelElement1.innerHTML+ " $"+ $('#personsplit').val())
+    }
+    else if(getSelectedValue.id=="percentage"){
+      labelElement1.innerHTML = " x $"+ parseFloat(amt.value).toFixed(2) + " =";
+      labelElement2.innerHTML = " x $"+ parseFloat(amt.value).toFixed(2) + " ="; 
+      if ($('#selfpercent').val()==""){
+        $('#selfpercent').val(100);
+        $('#personpercent').val(0);
+      }
+      else{
+        $('#personpercent').val(100-$('#selfpercent').val());
+      }
+      $('#selfsplit').val((amt.value*($('#selfpercent').val()/100)).toFixed(2));
+      $('#personsplit').val((amt.value*($('#personpercent').val()/100)).toFixed(2));
+      $('#notes').val(selffirstname.innerHTML+" : "+ $('#selfpercent').val()+ "% "+labelElement1.innerHTML+" $"+ $('#selfsplit').val()+ ", \r" + personfirstname.innerHTML+" : "+ $('#personpercent').val()+ "% "+labelElement1.innerHTML+" $"+  $('#personsplit').val())
+    }
+  };
+  
+  $('[name="split"]').on('change', function() {
+    myfunc();
+  });
+  
+  $('#amount').on('keyup',function(){
+    var getSelectedValue = document.querySelector('input[name="split"]:checked');
+    if (getSelectedValue != null)
+    {
+      myfunc();
+    }
+  });
+
+  $('#selfpercent').on('keyup',function(){
+    
+    $('#personpercent').val(100-this.value);
+    myfunc();
+  });
+
+  $('#personpercent').on('keyup',function(){
+    
+    $('#selfpercent').val(100-this.value);
+    myfunc();
+  });
+</script>
+
+
 
 <!-- Modal -->
 <div novalidate class="modal fade" id="addCategory" role="dialog">
   <div class="modal-dialog">
     <!-- Modal content-->
     <div class="modal-content">
-      <div class="modal-header">
-        
+      <div class="modal-header">     
         <h4 class="modal-title">Edit Category</h4>
         <button type="button" class="close" data-dismiss="modal">&times;</button>
       </div>
       <div class="modal-body">
-        
         <label for="category">Enter Category to add:</label>
         <form action = "/expense_entry/{{person.firstname}}/add-category" method = "POST">
-
           <div class="input-group mb-3">
             <input type = "text" class="form-control" name = "newcategory" required/>
             <input type = "submit" class="btn btn-info" value="Add"/>
           </div>
-          
         </form> 
         <br/>
         <div class="list-group overflow-auto shadow" style="max-height: 170px;">
@@ -140,7 +288,6 @@
                           <span aria-hidden="true">&times;</span>
                       </button> <!-- x button -->
                   </td>
-                
               </tr>
               <!-- Modal -->
               <div class="modal fade" id="myCategoryDelete{{list.id}}" role="dialog">
@@ -149,7 +296,6 @@
                   <!-- Modal content-->
                   <div class="modal-content">
                     <div class="modal-header">
-                      
                       <h4 class="modal-title">Delete Category</h4>
                       <button type="button" class="close" data-dismiss="modal">&times;</button>
                     </div>
@@ -171,14 +317,13 @@
         <br/>  
       </div>
     </div>
-    
   </div>
 </div>
 
 <br/>
 <br/>
     <div>
-      <h1 align="center">{{person.firstname}} Expense Log</h1>
+      <h1 align="center">{{person.firstname}}'s Expense Log</h1>
     </div>
     <br/>
 <table class="table table-hover">
@@ -188,6 +333,8 @@
         <th scope="col">Description</th>
         <th scope="col">Category</th>
         <th scope="col">Amount</th>
+        <th scope="col">Notes</th>
+        <th scope="col"></th>
       </tr>
     </thead>
     <tbody>
@@ -196,10 +343,12 @@
             <td>{{ entry.date }}</td>
             <td>{{ entry.description }}</td>
             <td>{{ entry.category.categoryType }}</td>
-            <td>${{ '%0.2f' % ( entry.amount / 100 )}}
-                <button type="button" class="close" data-toggle="modal" data-target="#myModal{{entry.id}}">
-                    <span aria-hidden="true">&times;</span>
-                </button> <!-- x button -->
+            <td>${{ '%0.2f' % ( entry.amount / 100 )}}</td>
+            <td style="width: 500px;">{{ entry.notes }}</td>
+            <td>
+              <button type="button" class="close" data-toggle="modal" data-target="#myModal{{entry.id}}" >
+                <span aria-hidden="true">&times;</span>
+              </button> <!-- x button -->
             </td>
         </tr>
         <!-- Entry delete Modal -->
@@ -208,8 +357,7 @@
           
             <!-- Modal content-->
             <div class="modal-content">
-              <div class="modal-header">
-                
+              <div class="modal-header">               
                 <h4 class="modal-title">Delete Entry</h4>
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
               </div>
@@ -223,13 +371,7 @@
             </div>
           </div>
         </div>
-
-        
-        {% endfor %}
-
-        
+        {% endfor %} 
     </tbody>
   </table>  
-
-
 {% endblock %}

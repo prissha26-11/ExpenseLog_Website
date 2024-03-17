@@ -12,7 +12,6 @@ from wtforms.fields import DateField,DateTimeField
 
 
 views = Blueprint('views',__name__)
-
 categoryItemList = ['Food','Grocery','Utility','Travel']
 
 
@@ -28,11 +27,17 @@ class ExpenseEntryForm(FlaskForm):
     description = StringField('Description', validators=[InputRequired(), Length(min=4, max= 15, message="Description should be between 4 to 15 characters.")])
     category = SelectField('Category', choices=categoryItemList)
     amount = StringField('Amount', validators=[InputRequired(message="Enter a dollar amount.")])
+    selfsplit = StringField("selfsplit")
+    personsplit =StringField("personsplit")
 
     def validate_amount(form, field):
         if field.data:
             if not is_number(field.data):
-                raise ValidationError('Enter valid dollar amount')
+                raise ValidationError('Enter valid dollar amount.')
+            if float(field.data) == 0:
+                raise ValidationError('Amount cannot be 0.')
+            if float(field.data) < 0:
+                raise ValidationError('Amount cannot be a negative value.')
 
 @views.route('/', methods=['GET','POST'])
 @login_required
@@ -43,7 +48,6 @@ def home():
         db.session.add(addtolist)
         db.session.commit()
         people = People.query.all()
-        print("in")
         print(people)
 
     category = Category.query.first()
@@ -79,6 +83,7 @@ def expense_entry(var):
     form = ExpenseEntryForm()
     todayDate = date.today()
     person = People.query.filter_by(user_id=current_user.id,firstname = var).first()
+    personuser = People.query.filter_by(user_id=current_user.id,firstname = current_user.first_name+" (Self)").first()
     form.category.choices = categoryItemList
     if request.form.get('btn') is not None:
         if form.validate_on_submit():
@@ -87,19 +92,30 @@ def expense_entry(var):
             description = form.description.data #request.form.get('description')
             categorySelected = form.category.data #request.form.get('categorySelection')
             category = Category.query.filter_by(categoryType=categorySelected).first()
-            amount = float(form.amount.data) #float(request.form.get('amount'))*100
-
-            if amount <= 0:
-                flash('Amount should be more than 0', category='error')
+            splitchecked = request.form.get('split-checkbox')
+            notes = request.form.get('notes')
+            print(notes)
+            if splitchecked == 'on':
+                selfamount = float(form.selfsplit.data)
+                personamount = float(form.personsplit.data)
+                self_entry = Entry(date=dateChosen,description=description,category=category, amount=selfamount*100,people_id=current_user.id)
+                person_entry = Entry(date=dateChosen,description=description,category=category, amount=personamount*100,people_id=person.id,notes=notes)
+                new_entry = [self_entry,person_entry]
+                person.total = float(person.total) + personamount
+                db.session.add_all(new_entry)
             else:
+                amount = float(form.amount.data) #float(request.form.get('amount'))*100
                 new_entry = Entry(date=dateChosen,description=description,category=category, amount=amount*100,people_id=person.id)
-                db.session.add(new_entry)
                 person.total = float(person.total) + amount
-                db.session.commit()
-                flash('Entry added',category='success')
+                db.session.add(new_entry)
+
+            # amount = float(form.amount.data) #float(request.form.get('amount'))*100
+            # new_entry = Entry(date=dateChosen,description=description,category=category, amount=amount*100,people_id=person.id)
+            db.session.commit()
+            flash('Entry added',category='success')
             
     categorylist = Category.query.all()    
-    return render_template("expense_entry.html",user=current_user,categorylist=categorylist,todayDate=todayDate, form=form,person=person)
+    return render_template("expense_entry.html",user=current_user,categorylist=categorylist,todayDate=todayDate, form=form,person=person, personuser=personuser)
 
 @views.route('/expense_entry/<string:var>/add-category', methods=['POST'])
 @login_required
@@ -107,6 +123,7 @@ def add_category(var):
     #if request.method == 'POST':
     form = ExpenseEntryForm()
     person = People.query.filter_by(user_id=current_user.id,firstname = var).first()
+    personuser = People.query.filter_by(user_id=current_user.id,firstname = current_user.first_name+" (Self)").first()
     todayDate = date.today()
     categoryentered = request.form.get('newcategory')
     categoryItemList.append(categoryentered)
@@ -115,9 +132,8 @@ def add_category(var):
     db.session.add(new_entry)
     db.session.commit()
     flash('New category added',category='success')
-
     categorylist = Category.query.all()
-    return render_template("expense_entry.html",user=current_user,categorylist=categorylist,todayDate=todayDate,form=form,person=person)
+    return render_template("expense_entry.html",user=current_user,categorylist=categorylist,todayDate=todayDate,form=form,person=person, personuser=personuser)
 
 @views.route('/autocomplete', methods=['GET'])
 def autocomplete():
@@ -134,8 +150,6 @@ def autocompletecat(value):
     descrip = value
     ent = Entry.query.filter_by(description = descrip).first()
     cat = Category.query.filter_by(id=ent.category_id).first()
-    print("printing cat func: ")
-    print(cat)
     return jsonify(cat.categoryType)
 
 @views.route('/delete-entry', methods=['POST'])
